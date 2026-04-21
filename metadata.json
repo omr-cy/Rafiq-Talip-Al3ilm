@@ -1,7 +1,8 @@
 {
-  "name": "Rafiq-Talip-Alilm",
+  "name": "Rafiq-Talip-Al3ilm",
   "description": "رفيقك في طلب العلم بإذن الله.",
   "requestFramePermissions": [
     "microphone"
-  ]
+  ],
+  "majorCapabilities": []
 }
