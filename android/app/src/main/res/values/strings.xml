@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">رفيق طالب العلم</string>
+    <string name="title_activity_main">رفيق طالب العلم</string>
+    <string name="package_name">com.talibalilm.app</string>
+    <string name="custom_url_scheme">com.talibalilm.app</string>
+</resources>

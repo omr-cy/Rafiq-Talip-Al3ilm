@@ -1,0 +1,102 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Build web app
+        run: npm run build
+        
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Validate or Create Icon
+        run: |
+          echo "Checking icon"
+          
+          if [ -f assets/icon.base64 ]; then
+            tr -d '\n' < assets/icon.base64 | base64 -d > assets/icon.png
+          else
+            echo "No icon.base64 found"
+            exit 1
+          fi
+
+          if [ ! -s assets/icon.png ]; then
+            echo "Empty or invalid icon"
+            exit 1
+          fi
+
+          file assets/icon.png | grep -q "PNG image"
+
+      - name: Generate Android Assets
+        run: npx @capacitor/assets generate --android
+
+      - name: Sync Android
+        run: npx cap sync android
+
+      - name: Regenerate Gradle Wrapper
+        run: |
+          cd android
+          rm -f gradle/wrapper/gradle-wrapper.jar
+          gradle wrapper --gradle-version 8.13
+          chmod +x gradlew
+
+      - name: Build with Gradle
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace --info
+
+      # - name: Upload APK
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: app-debug
+      #     path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Install rclone
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
+
+      - name: Load rclone config
+        run: |
+          mkdir -p ~/.config/rclone
+          cat <<EOF > ~/.config/rclone/rclone.conf
+          ${{ secrets.RCLONE_CONFIG }}
+          EOF
+          # Fix common error where 'n' is saved as service_account_file
+          sed -i '/service_account_file = n/d' ~/.config/rclone/rclone.conf
+
+      - name: Upload APK to Google Drive
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          NEW_NAME="رفيق طالب العلم_$TIMESTAMP.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk ./$NEW_NAME
+          rclone copy ./$NEW_NAME gdrive:/رفيق طالب العلم_Builds
+
+
+
+
+
+
+

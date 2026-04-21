@@ -1,0 +1,7 @@
+{
+  "name": "Rafiq-Talip-Alilm",
+  "description": "رفيقك في طلب العلم بإذن الله.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
