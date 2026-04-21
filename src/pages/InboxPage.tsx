@@ -166,7 +166,7 @@ export function InboxPage() {
         onClick={() => setIsAdding(true)}
         className="md:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
       >
-        <Plus className="w-6 h-6" />
+        <MessageSquare className="w-6 h-6" />
       </button>
 
       {/* Add Message Form (Modal) */}

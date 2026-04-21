@@ -89,10 +89,10 @@ jobs:
 
       - name: Upload APK to Google Drive
         run: |
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          NEW_NAME="رفيق طالب العلم_$TIMESTAMP.apk"
+          TIMESTAMP=$(date +%Y%m%d_%H:%M:%S)
+          NEW_NAME="Rafiq-Talip-Al3lm_$TIMESTAMP.apk"
           cp android/app/build/outputs/apk/debug/app-debug.apk ./$NEW_NAME
-          rclone copy ./$NEW_NAME gdrive:/رفيق طالب العلم_Builds
+          rclone copy ./$NEW_NAME gdrive:/Rafiq-Talip-Al3il_Builds
 
 
 
