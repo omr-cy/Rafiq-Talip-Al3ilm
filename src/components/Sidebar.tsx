@@ -50,7 +50,7 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside className="hidden md:flex w-64 bg-paper-dark/20 border-l border-olive-200/40 h-screen sticky top-0 flex-col shrink-0">
+    <aside className="hidden lg:flex w-64 bg-paper-dark/20 border-l border-olive-200/40 h-screen sticky top-0 flex-col shrink-0">
       <div className="p-8 flex items-center gap-4 relative" ref={menuRef}>
         <div 
           onClick={() => setShowMenu(!showMenu)}

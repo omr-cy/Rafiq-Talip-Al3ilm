@@ -23,6 +23,7 @@ import { DatePicker } from "../components/DatePicker";
 import { RichTextEditor } from "../components/RichTextEditor";
 import DOMPurify from "dompurify";
 import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
+import { useMobileBackHandler } from "../hooks/useMobileBackHandler";
 import { Skeleton } from "../components/Skeleton";
 
 const COLORS = [
@@ -102,6 +103,9 @@ export function FlashcardsPage() {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useLockBodyScroll(isAddingCard || !!confirmDelete);
+  
+  useMobileBackHandler(isAddingCard, () => setIsAddingCard(false));
+  useMobileBackHandler(!!confirmDelete, () => setConfirmDelete(null));
 
   const [frontText, setFrontText] = useState("");
   const [backText, setBackText] = useState("");
@@ -329,7 +333,7 @@ export function FlashcardsPage() {
   const flaggedCount = cards.filter((c) => c.isFlagged).length;
 
   return (
-    <div className="max-w-7xl mx-auto h-[calc(100vh-10rem)] md:h-[calc(100vh-6rem)] flex flex-col gap-4">
+    <div className="max-w-7xl mx-auto h-[calc(100vh-10rem)] lg:h-[calc(100vh-6rem)] flex flex-col gap-4">
       {(settings && !settings.hideFlashcardsIntro) && (
         <div className="bg-card p-6 rounded-3xl border border-olive-200/50 shadow-sm relative group">
           <button
@@ -355,9 +359,9 @@ export function FlashcardsPage() {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-0 md:gap-4 bg-card rounded-3xl border border-olive-200/50 shadow-sm overflow-hidden flex-1">
+      <div className="flex flex-col lg:flex-row gap-0 lg:gap-4 bg-card rounded-3xl border border-olive-200/50 shadow-sm overflow-hidden flex-1">
         {/* Sidebar / Topbar for Categories */}
-        <div className="w-full md:w-64 border-b md:border-b-0 md:border-l border-olive-100 bg-olive-50/30 flex flex-col shrink-0">
+        <div className="w-full lg:w-64 border-b lg:border-b-0 lg:border-l border-olive-100 bg-olive-50/30 flex flex-col shrink-0">
         <div className="p-4 border-b border-olive-100 flex justify-between items-center">
           <h2 className="font-serif font-bold text-lg text-olive-900">
             التصنيفات
@@ -392,11 +396,11 @@ export function FlashcardsPage() {
           </div>
         )}
 
-        <div className="overflow-x-auto md:overflow-y-auto p-2 flex flex-row md:flex-col gap-2 md:gap-0 md:space-y-1 custom-scrollbar">
+        <div className="overflow-x-auto lg:overflow-y-auto p-2 flex flex-row lg:flex-col gap-2 lg:gap-0 lg:space-y-1 custom-scrollbar">
           <button
             onClick={() => setActiveCategoryId("all")}
             className={cn(
-              "whitespace-nowrap md:w-full text-right px-3 py-2 rounded-xl text-sm font-medium transition-colors",
+              "whitespace-nowrap lg:w-full text-right px-3 py-2 rounded-xl text-sm font-medium transition-colors",
               activeCategoryId === "all"
                 ? "bg-olive-200 text-olive-900"
                 : "text-olive-700 hover:bg-olive-100",
@@ -408,7 +412,7 @@ export function FlashcardsPage() {
           <button
             onClick={() => setActiveCategoryId("flagged")}
             className={cn(
-              "whitespace-nowrap md:w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors",
+              "whitespace-nowrap lg:w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors",
               activeCategoryId === "flagged"
                 ? "bg-amber-100 text-amber-900"
                 : "text-olive-700 hover:bg-olive-100",
@@ -435,7 +439,7 @@ export function FlashcardsPage() {
           <button
             onClick={() => setActiveCategoryId("uncategorized")}
             className={cn(
-              "whitespace-nowrap md:w-full text-right px-3 py-2 rounded-xl text-sm font-medium transition-colors",
+              "whitespace-nowrap lg:w-full text-right px-3 py-2 rounded-xl text-sm font-medium transition-colors",
               activeCategoryId === "uncategorized"
                 ? "bg-olive-200 text-olive-900"
                 : "text-olive-700 hover:bg-olive-100",
@@ -444,8 +448,8 @@ export function FlashcardsPage() {
             بدون تصنيف
           </button>
 
-          <div className="hidden md:block h-px bg-olive-100 my-2" />
-          <div className="md:hidden w-px bg-olive-100 mx-1" />
+          <div className="hidden lg:block h-px bg-olive-100 my-2" />
+          <div className="lg:hidden w-px bg-olive-100 mx-1" />
 
           {categories.map((cat) => (
             <div key={cat.id} className="flex items-center group shrink-0">
@@ -465,7 +469,7 @@ export function FlashcardsPage() {
                   setConfirmDelete({ type: "category", id: cat.id })
                 }
                 className={cn(
-                  "p-2 rounded-l-xl transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100",
+                  "p-2 rounded-l-xl transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100",
                   activeCategoryId === cat.id
                     ? "bg-olive-200 text-red-600 hover:bg-red-100"
                     : "hover:bg-red-50 text-red-500",
@@ -480,7 +484,7 @@ export function FlashcardsPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="p-4 md:p-6 border-b border-olive-100 flex justify-between items-center bg-card z-10">
+        <div className="p-4 lg:p-6 border-b border-olive-100 flex justify-between items-center bg-card z-10">
           <h1 className="text-2xl font-serif font-bold text-olive-900">
             {activeCategoryId === "all"
               ? "جميع البطاقات"
@@ -503,7 +507,7 @@ export function FlashcardsPage() {
                 setSelectedCategoryId("");
               }
             }}
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold shadow-md active:scale-95"
+            className="hidden lg:flex items-center gap-2 px-4 py-2 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold shadow-md active:scale-95"
           >
             <Plus className="w-5 h-5" />
             <span>إضافة بطاقة</span>
@@ -527,11 +531,11 @@ export function FlashcardsPage() {
             }}
             className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
           >
-            <Copy className="w-6 h-6" />
+            <Plus className="w-6 h-6" />
           </button>
         )}
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-olive-50/10">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6 bg-olive-50/10">
           {isLoading && page === 1 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -699,10 +703,10 @@ export function FlashcardsPage() {
 
       {/* Add/Edit Modal */}
       {isAddingCard && (
-        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center md:p-4 bg-olive-900/40 backdrop-blur-sm">
-          <div className="bg-card w-full md:max-w-3xl h-[95vh] md:h-auto md:max-h-[90vh] rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden" />
-            <div className="p-4 md:p-6 border-b border-olive-100 flex justify-between items-center bg-olive-50/50">
+        <div className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center lg:p-4 bg-olive-900/40 backdrop-blur-sm">
+          <div className="bg-card w-full lg:max-w-3xl h-[95vh] lg:h-auto lg:max-h-[90vh] rounded-t-3xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
+            <div className="p-4 lg:p-6 border-b border-olive-100 flex justify-between items-center bg-olive-50/50">
               <h2 className="text-xl font-serif font-bold text-olive-900">
                 {editingCard ? "تعديل البطاقة" : "إضافة بطاقة جديدة"}
               </h2>
@@ -714,7 +718,7 @@ export function FlashcardsPage() {
               </button>
             </div>
 
-            <div className="p-4 md:p-6 overflow-y-auto flex-1 space-y-6">
+            <div className="p-4 lg:p-6 overflow-y-auto flex-1 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-olive-700 mb-2">
                   التصنيف
@@ -733,7 +737,7 @@ export function FlashcardsPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-olive-700 mb-2">
                     الوجه (السؤال / المصطلح)
@@ -756,7 +760,7 @@ export function FlashcardsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-olive-700 mb-2 flex items-center gap-2">
                     <Palette className="w-4 h-4" />

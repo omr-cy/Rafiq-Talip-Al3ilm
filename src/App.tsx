@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, memo } from "react";
 import { StatusBar } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 import { Sidebar } from "./components/Sidebar";
@@ -51,11 +51,11 @@ function Layout() {
               <Route path="/flashcards" element={<MainCarousel />} />
 
               {/* Standalone/Overlay Pages */}
-              <Route path="/dictionary" element={<div className="h-full overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe"><DictionaryPage /></div>} />
-              <Route path="/inbox" element={<div className="h-full overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe"><InboxPage /></div>} />
-              <Route path="/audio" element={<div className="h-full overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe"><AudioPage /></div>} />
-              <Route path="/settings" element={<div className="h-full overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe"><SettingsPage /></div>} />
-              <Route path="/appearance" element={<div className="h-full overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe"><AppearancePage /></div>} />
+              <Route path="/dictionary" element={<div className="h-full overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe"><DictionaryPage /></div>} />
+              <Route path="/inbox" element={<div className="h-full overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe"><InboxPage /></div>} />
+              <Route path="/audio" element={<div className="h-full overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe"><AudioPage /></div>} />
+              <Route path="/settings" element={<div className="h-full overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe"><SettingsPage /></div>} />
+              <Route path="/appearance" element={<div className="h-full overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe"><AppearancePage /></div>} />
             </Routes>
           </Suspense>
         </main>

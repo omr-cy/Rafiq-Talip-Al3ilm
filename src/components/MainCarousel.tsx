@@ -27,94 +27,124 @@ export function MainCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [isScrolling, setIsScrolling] = useState(false);
+  const isInternalScroll = useRef(false);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
-  const ignoreNextScroll = useRef(false);
+  const isTouching = useRef(false);
 
-  // Sync Location -> Scroll Position
+  // Sync Location -> Scroll Position (Tabs bottom bar clicks)
   useEffect(() => {
     const tabIndex = MAIN_TABS.findIndex((t) => t.path === location.pathname);
-    if (tabIndex !== -1 && containerRef.current) {
+    if (tabIndex !== -1 && containerRef.current && !isInternalScroll.current) {
       const container = containerRef.current;
-      const children = container.children;
-      if (children[tabIndex]) {
-        // Mark that this scroll is programmatic to ignore it in handleScroll
-        ignoreNextScroll.current = true;
-        
-        // Use scrollTo on container instead of scrollIntoView on child for better control
-        const child = children[tabIndex] as HTMLElement;
+      const child = container.children[tabIndex] as HTMLElement;
+      if (!child) return;
+      
+      const currentScroll = container.scrollLeft;
+      const targetScroll = child.offsetLeft;
+      
+      // Allow slight pixel difference for sub-pixel layouts
+      if (Math.abs(currentScroll - targetScroll) > 5) {
+        isInternalScroll.current = true;
         container.scrollTo({
-          left: child.offsetLeft,
+          left: targetScroll,
           behavior: "smooth"
         });
 
-        // Reset the ignore flag after the smooth scroll completes
         if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+        
         scrollTimeout.current = setTimeout(() => {
-          ignoreNextScroll.current = false;
-        }, 500); // Extended to 500ms to safely cover the smooth scroll behavior
+          isInternalScroll.current = false;
+        }, 800);
       }
     }
   }, [location.pathname]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = parseInt(entry.target.getAttribute("data-index") || "0");
-            const targetTab = MAIN_TABS[index];
-            if (targetTab && location.pathname !== targetTab.path) {
-              // Only navigate if not forced to ignore (e.g., during programmatic scroll)
-              if (!ignoreNextScroll.current) {
-                navigate(targetTab.path, { replace: true });
-              }
-            }
+    const container = containerRef.current;
+    if (!container) return;
+
+    let debounceTimeoutId: NodeJS.Timeout;
+
+    const handleTouchStart = () => { isTouching.current = true; };
+    const handleTouchEnd = () => { isTouching.current = false; };
+
+    const handleScroll = () => {
+      if (isInternalScroll.current) return;
+
+      clearTimeout(debounceTimeoutId);
+
+      // We wait longer (250ms) to ensure snap animation finishes
+      debounceTimeoutId = setTimeout(() => {
+        // Do not update URL if the user's finger is still on the screen
+        if (isTouching.current) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        Array.from(container.children).forEach((child, index) => {
+          const childRect = child.getBoundingClientRect();
+          const childCenter = childRect.left + childRect.width / 2;
+          const diff = Math.abs(containerCenter - childCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = index;
           }
         });
-      },
-      {
-        root: containerRef.current,
-        threshold: 0.8, // Must be 80% visible to trigger
-      }
-    );
 
-    const childElements = containerRef.current?.children;
-    if (childElements) {
-      Array.from(childElements).forEach((el, i) => {
-        el.setAttribute("data-index", i.toString());
-        observer.observe(el);
-      });
-    }
+        const targetTab = MAIN_TABS[closestIndex];
+        if (targetTab && location.pathname !== targetTab.path) {
+          isInternalScroll.current = true;
+          // React Router navigate triggers a full render cycle which causes scrolling judder.
+          // Because we only need the bottom bar to update visually, we use the `{ replace: true }`
+          // option so it doesn't push massive history stacks when swiping back and forth at once
+          navigate(targetTab.path, { replace: true });
+          
+          setTimeout(() => {
+            isInternalScroll.current = false;
+          }, 150);
+        }
+      }, 250); 
+    };
 
-    return () => observer.disconnect();
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    // Catch touch state so we don't trigger mid-swipe while resting finger
+    container.addEventListener("touchstart", handleTouchStart, { passive: true });
+    container.addEventListener("touchend", handleTouchEnd, { passive: true });
+    // Also catch touchend equivalent
+    container.addEventListener("touchcancel", handleTouchEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener("touchcancel", handleTouchEnd);
+      clearTimeout(debounceTimeoutId);
+    };
   }, [location.pathname, navigate]);
-
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth",
+        "flex w-full h-full overflow-x-auto snap-x snap-mandatory will-change-scroll overscroll-behavior-x-none",
         "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         "smooth-scroll shadow-inner bg-paper"
       )}
       dir="rtl"
     >
-      {/* 
-        Modified to use 'touch-pan-x' to advise the browser to prioritize 
-        horizontal scrolling during user interaction
-      */}
-      <div className="w-full h-full flex-shrink-0 snap-center snap-always overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe touch-pan-y touch-pan-x">
+      <div className="w-full h-full flex-shrink-0 snap-center overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe touch-pan-y touch-pan-x">
         <Suspense fallback={<PageLoader />}><Dashboard /></Suspense>
       </div>
-      <div className="w-full h-full flex-shrink-0 snap-center snap-always overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe touch-pan-y touch-pan-x">
+      <div className="w-full h-full flex-shrink-0 snap-center overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe touch-pan-y touch-pan-x">
         <Suspense fallback={<PageLoader />}><NotesPage /></Suspense>
       </div>
-      <div className="w-full h-full flex-shrink-0 snap-center snap-always overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe touch-pan-y touch-pan-x">
+      <div className="w-full h-full flex-shrink-0 snap-center overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe touch-pan-y touch-pan-x">
         <Suspense fallback={<PageLoader />}><GoalsPage /></Suspense>
       </div>
-      <div className="w-full h-full flex-shrink-0 snap-center snap-always overflow-y-auto p-3 md:p-8 pb-24 md:pb-8 pt-safe touch-pan-y touch-pan-x">
+      <div className="w-full h-full flex-shrink-0 snap-center overflow-y-auto p-3 lg:p-8 pb-24 lg:pb-8 pt-safe touch-pan-y touch-pan-x">
         <Suspense fallback={<PageLoader />}><FlashcardsPage /></Suspense>
       </div>
     </div>

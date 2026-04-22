@@ -29,6 +29,7 @@ import { RichTextEditor } from "../components/RichTextEditor";
 import { useNotification } from "../components/NotificationProvider";
 import DOMPurify from "dompurify";
 import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
+import { useMobileBackHandler } from "../hooks/useMobileBackHandler";
 import { Skeleton } from "../components/Skeleton";
 import { AudioRecorder } from "../components/AudioRecorder";
 import { CustomAudioPlayer } from "../components/CustomAudioPlayer";
@@ -83,6 +84,9 @@ export function NotesPage() {
   const [isRecording, setIsRecording] = useState(false);
 
   useLockBodyScroll(!!editingNote || showTemplateManager);
+  
+  useMobileBackHandler(!!editingNote, () => setEditingNote(null));
+  useMobileBackHandler(showTemplateManager, () => setShowTemplateManager(false));
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -202,7 +206,7 @@ export function NotesPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-7xl mx-auto min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] flex flex-col gap-8"
+      className="max-w-7xl mx-auto min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-4rem)] flex flex-col gap-8"
     >
       {/* Header Intro */}
       {(settings && !settings.hideNotesIntro) && (
@@ -248,7 +252,7 @@ export function NotesPage() {
             className="p-3 bg-card border border-olive-200/50 rounded-2xl text-olive-600 hover:bg-olive-50 transition-colors shadow-sm hover:shadow-md"
             title="إدارة القوالب"
           >
-            <Settings className="w-5 h-5" />
+            <Palette className="w-5 h-5" />
           </button>
         </div>
 
@@ -285,7 +289,7 @@ export function NotesPage() {
       </div>
 
       {/* Create Note Area (Desktop) */}
-      <div className="hidden md:block w-full max-w-2xl mx-auto">
+      <div className="hidden lg:block w-full max-w-2xl mx-auto">
         <CreateNoteArea onSave={handleSave} customTemplates={customTemplates} />
       </div>
 
@@ -309,7 +313,7 @@ export function NotesPage() {
           }
           className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
         >
-          <PenTool className="w-6 h-6" />
+          <Plus className="w-6 h-6" />
         </button>
       )}
 
@@ -364,12 +368,12 @@ export function NotesPage() {
 
       {/* Edit Note Modal */}
       {editingNote && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end md:items-center justify-center md:p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end lg:items-center justify-center lg:p-4 backdrop-blur-sm">
           <div
-            className="bg-card w-full md:max-w-2xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-[2rem] md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col border border-olive-200/50"
+            className="bg-card w-full lg:max-w-2xl h-[90vh] lg:h-auto lg:max-h-[90vh] rounded-t-[2rem] lg:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col border border-olive-200/50"
             style={{ backgroundColor: getNoteColor(editingNote.color) }}
           >
-            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden" />
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
             <div className="flex-1 overflow-y-auto">
               <NoteEditor
                 note={editingNote}
@@ -403,15 +407,13 @@ export function NotesPage() {
       )}
 
       {/* Template Manager Modal */}
-      <AnimatePresence>
-        {showTemplateManager && (
-          <TemplateManager
-            templates={customTemplates}
-            onClose={() => setShowTemplateManager(false)}
-            onUpdate={() => loadData(1, true)}
-          />
-        )}
-      </AnimatePresence>
+      {showTemplateManager && (
+        <TemplateManager
+          templates={customTemplates}
+          onClose={() => setShowTemplateManager(false)}
+          onUpdate={() => loadData(1, true)}
+        />
+      )}
     </motion.div>
   );
 }
@@ -1614,235 +1616,205 @@ function TemplateManager({
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        className="bg-card rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-olive-200/50"
       >
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-card rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-olive-200/50"
-        >
-          <div className="p-6 border-b border-olive-100/50 flex justify-between items-center bg-card">
-            <h2 className="font-bold text-olive-900 text-xl flex items-center gap-3">
-              <div className="p-2 bg-olive-100/50 rounded-xl">
-                <Settings className="w-5 h-5 text-olive-700" />
-              </div>
-              إدارة القوالب الخاصة
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-2 text-olive-400 hover:text-olive-900 hover:bg-olive-50 rounded-xl transition-all duration-200 active:scale-95"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+        <div className="p-6 border-b border-olive-100/50 flex justify-between items-center bg-card">
+          <h2 className="font-bold text-olive-900 text-xl flex items-center gap-3">
+            <div className="p-2 bg-olive-100/50 rounded-xl">
+              <Palette className="w-5 h-5 text-olive-700" />
+            </div>
+            إدارة القوالب الخاصة
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 text-olive-400 hover:text-olive-900 hover:bg-olive-50 rounded-xl transition-all duration-200 active:scale-95"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-olive-50/20">
-            {/* Create / Edit Template */}
-            <div className="bg-card p-6 rounded-[1.5rem] border border-olive-100 shadow-sm space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="font-bold text-olive-900 text-lg">
-                  {editingTemplate.id ? "تعديل القالب" : "إنشاء قالب جديد"}
-                </h3>
-                {editingTemplate.id && (
-                  <button
-                    onClick={() =>
-                      setEditingTemplate({ id: "", name: "", fields: [] })
-                    }
-                    className="text-xs px-4 py-1.5 bg-olive-100 text-olive-700 hover:bg-olive-200 rounded-full font-bold transition-all duration-200 active:scale-95"
-                  >
-                    إلغاء التعديل
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-olive-700">
-                  اسم القالب
-                </label>
-                <input
-                  type="text"
-                  placeholder="مثال: تلخيص كتاب، خطة أسبوعية..."
-                  value={editingTemplate.name}
-                  onChange={(e) =>
-                    setEditingTemplate({
-                      ...editingTemplate,
-                      name: e.target.value,
-                    })
-                  }
-                  className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl p-3 focus:outline-none focus:border-olive-500 focus:ring-1 focus:ring-olive-500 transition-all font-medium"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-sm font-bold text-olive-800">
-                    حقول القالب:
-                  </h4>
-                  <span className="text-xs font-medium text-olive-500 bg-olive-100/50 px-2 py-1 rounded-md">
-                    {editingTemplate.fields.length} حقول
-                  </span>
-                </div>
-
-                <Reorder.Group
-                  axis="y"
-                  values={editingTemplate.fields}
-                  onReorder={handleReorder}
-                  className="space-y-3"
-                >
-                  <AnimatePresence>
-                    {editingTemplate.fields.map((field, idx) => (
-                      <Reorder.Item
-                        key={field.id}
-                        value={field}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                        className="flex flex-col gap-4 bg-card p-5 rounded-2xl border border-olive-200/60 shadow-sm cursor-grab active:cursor-grabbing hover:border-olive-300 transition-colors"
-                      >
-                        <div className="flex gap-3 items-center">
-                          <div className="p-2 bg-olive-50 rounded-lg text-olive-400">
-                            <GripVertical className="w-4 h-4" />
-                          </div>
-                          <input
-                            type="text"
-                            value={field.label}
-                            onChange={(e) => {
-                              const fields = [...editingTemplate.fields];
-                              fields[idx].label = e.target.value;
-                              setEditingTemplate({
-                                ...editingTemplate,
-                                fields,
-                              });
-                            }}
-                            placeholder="اسم الحقل (مثال: الفوائد، المهام...)"
-                            className="flex-1 bg-transparent border-b-2 border-transparent hover:border-olive-200 focus:border-olive-500 focus:outline-none text-sm font-bold pb-1 transition-colors"
-                          />
-                          <button
-                            onClick={() => {
-                              const fields = editingTemplate.fields.filter(
-                                (_, i) => i !== idx,
-                              );
-                              setEditingTemplate({
-                                ...editingTemplate,
-                                fields,
-                              });
-                            }}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-xl transition-all duration-200 active:scale-95"
-                            title="حذف الحقل"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pl-2 pr-12">
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
-                              نوع الحقل
-                            </label>
-                            <select
-                              value={field.type}
-                              onChange={(e) => {
-                                const fields = [...editingTemplate.fields];
-                                fields[idx].type = e.target.value as any;
-                                setEditingTemplate({
-                                  ...editingTemplate,
-                                  fields,
-                                });
-                              }}
-                              className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
-                            >
-                              <option value="text">نص قصير</option>
-                              <option value="textarea">نص طويل</option>
-                              <option value="checklist">قائمة مهام</option>
-                            </select>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
-                              عرض الحقل
-                            </label>
-                            <select
-                              value={field.width || "full"}
-                              onChange={(e) => {
-                                const fields = [...editingTemplate.fields];
-                                fields[idx].width = e.target.value as any;
-                                setEditingTemplate({
-                                  ...editingTemplate,
-                                  fields,
-                                });
-                              }}
-                              className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
-                            >
-                              <option value="full">عرض كامل (100%)</option>
-                              <option value="half">نصف العرض (50%)</option>
-                              <option value="third">ثلث العرض (33%)</option>
-                            </select>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
-                              حجم الحقل
-                            </label>
-                            <select
-                              value={field.size || "medium"}
-                              onChange={(e) => {
-                                const fields = [...editingTemplate.fields];
-                                fields[idx].size = e.target.value as any;
-                                setEditingTemplate({
-                                  ...editingTemplate,
-                                  fields,
-                                });
-                              }}
-                              className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
-                            >
-                              <option value="small">صغير</option>
-                              <option value="medium">متوسط</option>
-                              <option value="large">كبير</option>
-                            </select>
-                          </div>
-                        </div>
-                      </Reorder.Item>
-                    ))}
-                  </AnimatePresence>
-                </Reorder.Group>
-
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-olive-50/20">
+          {/* Create / Edit Template */}
+          <div className="bg-card p-6 rounded-[1.5rem] border border-olive-100 shadow-sm space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-olive-900 text-lg">
+                {editingTemplate.id ? "تعديل القالب" : "إنشاء قالب جديد"}
+              </h3>
+              {editingTemplate.id && (
                 <button
                   onClick={() =>
-                    setEditingTemplate({
-                      ...editingTemplate,
-                      fields: [
-                        ...editingTemplate.fields,
-                        {
-                          id: `field_${Date.now()}`,
-                          label: "",
-                          type: "text",
-                          width: "full",
-                          size: "medium",
-                        },
-                      ],
-                    })
+                    setEditingTemplate({ id: "", name: "", fields: [] })
                   }
-                  className="flex items-center justify-center gap-2 w-full py-3.5 mt-4 border-2 border-dashed border-olive-200 text-sm text-olive-600 hover:text-olive-900 hover:border-olive-400 hover:bg-olive-50/50 rounded-xl transition-all duration-200 font-bold active:scale-95"
+                  className="text-xs px-4 py-1.5 bg-olive-100 text-olive-700 hover:bg-olive-200 rounded-full font-bold transition-all duration-200 active:scale-95"
                 >
-                  <Plus className="w-4 h-4" /> إضافة حقل جديد
+                  إلغاء التعديل
                 </button>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-olive-700">
+                اسم القالب
+              </label>
+              <input
+                type="text"
+                placeholder="مثال: تلخيص كتاب، خطة أسبوعية..."
+                value={editingTemplate.name}
+                onChange={(e) =>
+                  setEditingTemplate({
+                    ...editingTemplate,
+                    name: e.target.value,
+                  })
+                }
+                className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl p-3 focus:outline-none focus:border-olive-500 focus:ring-1 focus:ring-olive-500 transition-all font-medium"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h4 className="text-sm font-bold text-olive-800">
+                  حقول القالب:
+                </h4>
+                <span className="text-xs font-medium text-olive-500 bg-olive-100/50 px-2 py-1 rounded-md">
+                  {editingTemplate.fields.length} حقول
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {editingTemplate.fields.map((field, idx) => (
+                  <div
+                    key={field.id}
+                    className="flex flex-col gap-4 bg-card p-5 rounded-2xl border border-olive-200/60 shadow-sm transition-colors"
+                  >
+                    <div className="flex gap-3 items-center">
+                      <div className="p-2 bg-olive-50 rounded-lg text-olive-400 cursor-grab">
+                        <GripVertical className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        value={field.label}
+                        onChange={(e) => {
+                          const fields = [...editingTemplate.fields];
+                          fields[idx].label = e.target.value;
+                          setEditingTemplate({
+                            ...editingTemplate,
+                            fields,
+                          });
+                        }}
+                        placeholder="اسم الحقل (مثال: الفوائد، المهام...)"
+                        className="flex-1 bg-transparent border-b-2 border-transparent hover:border-olive-200 focus:border-olive-500 focus:outline-none text-sm font-bold pb-1 transition-colors"
+                      />
+                      <button
+                        onClick={() => {
+                          const fields = editingTemplate.fields.filter(
+                            (_, i) => i !== idx,
+                          );
+                          setEditingTemplate({
+                            ...editingTemplate,
+                            fields,
+                          });
+                        }}
+                        className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-xl transition-all duration-200 active:scale-95"
+                        title="حذف الحقل"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pl-2 pr-12">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
+                          نوع الحقل
+                        </label>
+                        <select
+                          value={field.type}
+                          onChange={(e) => {
+                            const fields = [...editingTemplate.fields];
+                            fields[idx].type = e.target.value as any;
+                            setEditingTemplate({
+                              ...editingTemplate,
+                              fields,
+                            });
+                          }}
+                          className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
+                        >
+                          <option value="text">نص قصير</option>
+                          <option value="textarea">نص طويل</option>
+                          <option value="checklist">قائمة مهام</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
+                          عرض الحقل
+                        </label>
+                        <select
+                          value={field.width || "full"}
+                          onChange={(e) => {
+                            const fields = [...editingTemplate.fields];
+                            fields[idx].width = e.target.value as any;
+                            setEditingTemplate({
+                              ...editingTemplate,
+                              fields,
+                            });
+                          }}
+                          className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
+                        >
+                          <option value="full">عرض كامل (100%)</option>
+                          <option value="half">نصف العرض (50%)</option>
+                          <option value="third">ثلث العرض (33%)</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-olive-500 uppercase tracking-wider">
+                          حجم الحقل
+                        </label>
+                        <select
+                          value={field.size || "medium"}
+                          onChange={(e) => {
+                            const fields = [...editingTemplate.fields];
+                            fields[idx].size = e.target.value as any;
+                            setEditingTemplate({
+                              ...editingTemplate,
+                              fields,
+                            });
+                          }}
+                          className="w-full bg-olive-50/50 border border-olive-200/60 rounded-xl text-xs p-2.5 focus:outline-none focus:border-olive-500 transition-colors"
+                        >
+                          <option value="small">صغير</option>
+                          <option value="medium">متوسط</option>
+                          <option value="large">كبير</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <button
-                onClick={handleSave}
-                disabled={
-                  !editingTemplate.name.trim() ||
-                  editingTemplate.fields.length === 0
+                onClick={() =>
+                  setEditingTemplate({
+                    ...editingTemplate,
+                    fields: [
+                      ...editingTemplate.fields,
+                      {
+                        id: `field_${Date.now()}`,
+                        label: "",
+                        type: "text",
+                        width: "full",
+                        size: "medium",
+                      },
+                    ],
+                  })
                 }
-                className="w-full py-3.5 bg-olive-900 text-paper rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-olive-800 transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
+                className="flex items-center justify-center gap-2 w-full py-3.5 mt-4 border-2 border-dashed border-olive-200 text-sm text-olive-600 hover:text-olive-900 hover:border-olive-400 hover:bg-olive-50/50 rounded-xl transition-all duration-200 font-bold active:scale-95"
               >
-                {editingTemplate.id ? "حفظ التعديلات" : "حفظ القالب"}
+                <Plus className="w-4 h-4" /> إضافة حقل جديد
               </button>
             </div>
 
@@ -1906,8 +1878,8 @@ function TemplateManager({
               </div>
             )}
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </div>
+      </div>
+    </div>
   );
 }

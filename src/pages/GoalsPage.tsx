@@ -23,6 +23,7 @@ import { format, isToday, isTomorrow, isPast } from "date-fns";
 import { DatePicker } from "../components/DatePicker";
 import { ar } from "date-fns/locale";
 import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
+import { useMobileBackHandler } from "../hooks/useMobileBackHandler";
 import { Skeleton } from "../components/Skeleton";
 
 const DAYS_OF_WEEK = [
@@ -66,6 +67,10 @@ export function GoalsPage() {
   } | null>(null);
 
   useLockBodyScroll(isAdding || !!editingGoal || !!confirmDelete);
+  
+  useMobileBackHandler(isAdding, () => setIsAdding(false));
+  useMobileBackHandler(!!editingGoal, () => setEditingGoal(null));
+  useMobileBackHandler(!!confirmDelete, () => setConfirmDelete(null));
 
   // Form state
   const [title, setTitle] = useState("");
@@ -409,7 +414,7 @@ export function GoalsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-[calc(100vh-10rem)] md:h-[calc(100vh-6rem)] flex flex-col gap-4">
+    <div className="max-w-7xl mx-auto h-[calc(100vh-10rem)] lg:h-[calc(100vh-6rem)] flex flex-col gap-4">
       {(settings && !settings.hideGoalsIntro) && (
         <div className="bg-card p-6 rounded-3xl border border-olive-200/50 shadow-sm relative group">
           <button
@@ -435,15 +440,15 @@ export function GoalsPage() {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-4 flex-1 overflow-hidden">
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden">
         {/* Main Content Area */}
         <div
           className={cn(
             "flex-1 flex flex-col bg-card rounded-3xl border border-olive-200/50 shadow-sm overflow-hidden",
-            isAdding || editingGoal ? "hidden md:flex" : "flex",
+            isAdding || editingGoal ? "hidden lg:flex" : "flex",
           )}
         >
-          <div className="p-4 md:p-6 border-b border-olive-100 flex flex-col gap-4">
+          <div className="p-4 lg:p-6 border-b border-olive-100 flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <select
@@ -483,7 +488,7 @@ export function GoalsPage() {
                 resetForm();
                 setIsAdding(true);
               }}
-              className="hidden md:flex items-center justify-center gap-2 px-4 py-2 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold shadow-md shadow-olive-900/10 active:scale-95"
+              className="hidden lg:flex items-center justify-center gap-2 px-4 py-2 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold shadow-md shadow-olive-900/10 active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>مهمة</span>
@@ -541,12 +546,12 @@ export function GoalsPage() {
             }}
             className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
           >
-            <Target className="w-6 h-6" />
+            <Plus className="w-6 h-6" />
           </button>
         )}
 
         {/* List Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -659,7 +664,7 @@ export function GoalsPage() {
                 return (
                   <React.Fragment key={habit.id}>
                     <div
-                      className="bg-card p-4 rounded-2xl border border-olive-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      className="bg-card p-4 rounded-2xl border border-olive-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                     >
                       <div className="flex items-center gap-4">
                         <button
@@ -731,7 +736,7 @@ export function GoalsPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col md:flex-row items-end md:items-center gap-3">
+                      <div className="flex flex-col lg:flex-row items-end lg:items-center gap-3">
                         <div className="flex flex-wrap gap-1 justify-end">
                           {DAYS_OF_WEEK.map((day) => {
                             const isSelected = habit.habitDays?.includes(day.id);
@@ -768,7 +773,7 @@ export function GoalsPage() {
                         (g) => g.linkedHabitId === habit.id,
                       );
                       return (
-                        <div className="mt-2 pl-4 md:pl-16 space-y-2">
+                        <div className="mt-2 pl-4 lg:pl-16 space-y-2">
                           {linkedTasks.map((task) => (
                             <TaskItem
                               key={task.id}
@@ -808,8 +813,8 @@ export function GoalsPage() {
 
       {/* Side Panel (Task Details) */}
       {isAdding && (
-        <div className="w-full md:w-96 bg-card rounded-t-3xl md:rounded-3xl border border-olive-200/50 shadow-2xl md:shadow-lg flex flex-col overflow-hidden animate-in slide-in-from-bottom-full md:slide-in-from-right-4 fixed md:relative inset-x-0 bottom-0 md:inset-auto z-[60] md:z-auto h-[90vh] md:h-auto">
-          <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden flex-shrink-0" />
+        <div className="w-full lg:w-96 bg-card rounded-t-3xl lg:rounded-3xl border border-olive-200/50 shadow-2xl lg:shadow-lg flex flex-col overflow-hidden animate-in slide-in-from-bottom-full lg:slide-in-from-right-4 fixed lg:relative inset-x-0 bottom-0 lg:inset-auto z-[60] lg:z-auto h-[90vh] lg:h-auto">
+          <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden flex-shrink-0" />
           <div className="flex justify-between items-center p-4 border-b border-olive-100 bg-olive-50/50">
             <h2 className="font-bold text-olive-900">
               {editingGoal ? "تفاصيل المهمة" : "مهمة جديدة"}

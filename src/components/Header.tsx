@@ -32,9 +32,9 @@ export function Header() {
   }, []);
 
   return (
-    <header className="h-16 md:h-20 flex-shrink-0 bg-card/80 backdrop-blur-xl border-b border-olive-200/40 flex items-center justify-between px-4 md:px-8 z-20 shadow-sm">
+    <header className="h-16 lg:h-20 flex-shrink-0 bg-card/80 backdrop-blur-xl border-b border-olive-200/40 flex items-center justify-between px-4 lg:px-8 z-20 shadow-sm">
       {/* Mobile App Title (Hidden on Desktop since Sidebar has it) */}
-      <div className="md:hidden flex items-center gap-3 relative" ref={menuRef}>
+      <div className="lg:hidden flex items-center gap-3 relative" ref={menuRef}>
         <div 
           onClick={() => setShowMenu(!showMenu)}
           className="w-10 h-10 bg-gradient-to-br from-olive-800 to-olive-900 rounded-xl flex items-center justify-center text-sand font-serif text-xl font-bold shadow-md shadow-olive-900/20 cursor-pointer hover:scale-105 transition-transform"
@@ -68,7 +68,7 @@ export function Header() {
       </div>
 
       {/* Spacer for Desktop */}
-      <div className="hidden md:block"></div>
+      <div className="hidden lg:block"></div>
 
       <div className="flex items-center gap-3">
         {/* Appearance Link */}
@@ -83,7 +83,7 @@ export function Header() {
           title="المظهر والألوان"
           aria-label="المظهر والألوان"
         >
-          <Palette className="w-5 h-5 md:w-6 md:h-6" />
+          <Palette className="w-5 h-5 lg:w-6 lg:h-6" />
         </Link>
 
         {/* Settings Icon */}
@@ -98,7 +98,7 @@ export function Header() {
           title="الإعدادات والنسخ الاحتياطي"
           aria-label="الإعدادات والنسخ الاحتياطي"
         >
-          <Settings className="w-5 h-5 md:w-6 md:h-6" />
+          <Settings className="w-5 h-5 lg:w-6 lg:h-6" />
         </Link>
       </div>
     </header>

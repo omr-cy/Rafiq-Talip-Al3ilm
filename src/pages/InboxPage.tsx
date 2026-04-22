@@ -123,7 +123,7 @@ export function InboxPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 lg:space-y-8">
       {/* Header */}
       {(settings && !settings.hideInboxIntro) && (
         <div className="bg-card p-6 rounded-3xl border border-olive-200/50 shadow-sm relative group">
@@ -164,16 +164,16 @@ export function InboxPage() {
       {/* FAB for Mobile */}
       <button
         onClick={() => setIsAdding(true)}
-        className="md:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
+        className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
       >
-        <MessageSquare className="w-6 h-6" />
+        <Plus className="w-6 h-6" />
       </button>
 
       {/* Add Message Form (Modal) */}
       {isAdding && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end md:items-center justify-center md:p-4 backdrop-blur-sm">
-          <div className="bg-card w-full md:max-w-2xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-3xl md:rounded-3xl border border-olive-200 shadow-2xl flex flex-col animate-in slide-in-from-bottom-full md:slide-in-from-bottom-8 duration-300">
-            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden" />
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end lg:items-center justify-center lg:p-4 backdrop-blur-sm">
+          <div className="bg-card w-full lg:max-w-2xl h-[90vh] lg:h-auto lg:max-h-[90vh] rounded-t-3xl lg:rounded-3xl border border-olive-200 shadow-2xl flex flex-col animate-in slide-in-from-bottom-full lg:slide-in-from-bottom-8 duration-300">
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
             <div className="flex justify-between items-center p-6 border-b border-olive-100">
               <h2 className="font-serif text-xl font-bold text-olive-900">
                 رسالة للمستقبل
@@ -187,7 +187,7 @@ export function InboxPage() {
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-olive-600">
                     عنوان الرسالة
@@ -272,7 +272,7 @@ export function InboxPage() {
                 <button
                   onClick={handleSave}
                   disabled={!title.trim() || !content.trim()}
-                  className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                  className="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                 >
                   <Send className="w-4 h-4" />
                   <span>إرسال للمستقبل</span>
@@ -285,9 +285,9 @@ export function InboxPage() {
 
       {/* Read Message Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center md:p-4 bg-olive-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-paper w-full md:max-w-2xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-full md:slide-in-from-bottom-8 duration-300">
-            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden" />
+        <div className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center lg:p-4 bg-olive-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-paper w-full lg:max-w-2xl h-[90vh] lg:h-auto lg:max-h-[90vh] rounded-t-3xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-full lg:slide-in-from-bottom-8 duration-300">
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
             <div className="p-6 border-b border-olive-200/50 flex justify-between items-center bg-card">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-olive-100 text-olive-900 rounded-xl">
@@ -341,13 +341,13 @@ export function InboxPage() {
 
       {/* Messages List */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Skeleton key={i} className="h-48 w-full rounded-[1.5rem]" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {messages.length === 0 ? (
             <div className="col-span-full text-center py-16 text-olive-400 bg-card rounded-[2rem] border border-olive-100 border-dashed">
               <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-20" />

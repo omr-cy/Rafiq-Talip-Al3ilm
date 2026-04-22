@@ -3,6 +3,7 @@ import { Search, Plus, BookMarked, Trash2, X, Save, Tag } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { db, DictionaryTerm } from "@/src/lib/db";
 import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
+import { useMobileBackHandler } from "../hooks/useMobileBackHandler";
 import { Skeleton } from "../components/Skeleton";
 
 const DEFAULT_CATEGORIES = [
@@ -35,6 +36,9 @@ export function DictionaryPage() {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useLockBodyScroll(isAdding || !!confirmDelete);
+  
+  useMobileBackHandler(isAdding, () => setIsAdding(false));
+  useMobileBackHandler(!!confirmDelete, () => setConfirmDelete(null));
 
   // Form state
   const [newTerm, setNewTerm] = useState("");
@@ -146,7 +150,7 @@ export function DictionaryPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 lg:space-y-8">
       {/* Header & Search */}
       {(settings && !settings.hideDictionaryIntro) && (
         <div className="bg-card p-6 rounded-3xl border border-olive-200/50 shadow-sm relative group">
@@ -176,16 +180,16 @@ export function DictionaryPage() {
       {/* FAB for Mobile */}
       <button
         onClick={() => setIsAdding(true)}
-        className="md:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
+        className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
       >
-        <BookMarked className="w-6 h-6" />
+        <Plus className="w-6 h-6" />
       </button>
 
       {/* Add Term Form (Modal) */}
       {isAdding && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end md:items-center justify-center md:p-4 backdrop-blur-sm">
-          <div className="bg-card w-full md:max-w-2xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-[2rem] md:rounded-[2rem] border border-olive-200/50 shadow-2xl flex flex-col animate-in slide-in-from-bottom-full md:slide-in-from-bottom-8 duration-300">
-            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 md:hidden" />
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-end lg:items-center justify-center lg:p-4 backdrop-blur-sm">
+          <div className="bg-card w-full lg:max-w-2xl h-[90vh] lg:h-auto lg:max-h-[90vh] rounded-t-[2rem] lg:rounded-[2rem] border border-olive-200/50 shadow-2xl flex flex-col animate-in slide-in-from-bottom-full lg:slide-in-from-bottom-8 duration-300">
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
             <div className="flex justify-between items-center p-6 border-b border-olive-100/50">
               <h2 className="font-serif text-2xl font-bold text-olive-900">
                 مصطلح جديد
@@ -198,8 +202,8 @@ export function DictionaryPage() {
               </button>
             </div>
 
-            <div className="p-6 md:p-8 space-y-6 overflow-y-auto flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 lg:p-8 space-y-6 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-olive-700 px-1">
                     المصطلح
@@ -284,7 +288,7 @@ export function DictionaryPage() {
                 <button
                   onClick={handleSave}
                   disabled={!newTerm.trim() || !newDefinition.trim()}
-                  className="w-full md:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95"
+                  className="w-full lg:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95"
                 >
                   <Save className="w-5 h-5" />
                   <span>حفظ المصطلح</span>
@@ -297,8 +301,8 @@ export function DictionaryPage() {
 
       {/* Filters & Search */}
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-          <div className="relative w-full md:w-1/2">
+        <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+          <div className="relative w-full lg:w-1/2">
             <Search className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-olive-400" />
             <input
               type="text"
@@ -311,7 +315,7 @@ export function DictionaryPage() {
 
           <button
             onClick={() => setIsAdding(true)}
-            className="hidden md:flex items-center justify-center gap-2 px-6 py-3 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-300 font-bold shadow-md shadow-olive-900/10 hover:shadow-lg hover:-translate-y-0.5"
+            className="hidden lg:flex items-center justify-center gap-2 px-6 py-3 bg-olive-900 text-paper rounded-xl hover:bg-olive-800 transition-all duration-300 font-bold shadow-md shadow-olive-900/10 hover:shadow-lg hover:-translate-y-0.5"
           >
             <Plus className="w-5 h-5" />
             <span>إضافة مصطلح</span>
@@ -366,13 +370,13 @@ export function DictionaryPage() {
 
       {/* Terms List */}
       {isLoading && page === 1 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Skeleton key={i} className="h-48 w-full rounded-[1.5rem]" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {terms.length === 0 ? (
             <div className="col-span-full text-center py-16 text-olive-400 bg-card rounded-3xl border border-olive-100 border-dashed">
               <BookMarked className="w-16 h-16 mx-auto mb-4 opacity-20" />
@@ -440,7 +444,7 @@ const TermCard = memo(function TermCard({ term, onDelete }: { term: DictionaryTe
     >
       <div className="absolute top-0 right-0 w-2 h-full bg-olive-200/30 group-hover:bg-olive-400/50 transition-colors duration-300"></div>
       <div className="flex justify-between items-start mb-4 pl-2">
-        <h3 className="font-serif text-xl md:text-2xl font-bold text-olive-900 group-hover:text-olive-700 transition-colors">
+        <h3 className="font-serif text-xl lg:text-2xl font-bold text-olive-900 group-hover:text-olive-700 transition-colors">
           {term.term}
         </h3>
         <button
@@ -452,7 +456,7 @@ const TermCard = memo(function TermCard({ term, onDelete }: { term: DictionaryTe
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
-      <p className="text-olive-800 leading-relaxed mb-6 text-sm md:text-base pl-2">
+      <p className="text-olive-800 leading-relaxed mb-6 text-sm lg:text-base pl-2">
         {term.definition}
       </p>
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-olive-100/50 pl-2">

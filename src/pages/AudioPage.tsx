@@ -195,7 +195,7 @@ export function AudioPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 lg:space-y-8">
       {/* Header */}
       {(settings && !settings.hideAudioIntro) && (
         <div className="bg-card p-6 rounded-3xl border border-olive-200/50 shadow-sm relative group">
@@ -234,7 +234,17 @@ export function AudioPage() {
       )}
 
       {/* Recorder Section */}
-      <div className="bg-card p-6 md:p-10 rounded-[2rem] border border-olive-200/40 shadow-sm space-y-8 relative overflow-hidden">
+      <div className="bg-card p-6 lg:p-10 rounded-[2rem] border border-olive-200/40 shadow-sm space-y-8 relative overflow-hidden">
+        {/* FAB for Mobile */}
+        <button
+          onClick={() => {
+            if (!isRecording) startRecording();
+            else stopRecording();
+          }}
+          className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-olive-900 text-paper rounded-full shadow-lg shadow-olive-900/20 flex items-center justify-center z-40 hover:scale-105 active:scale-95 transition-all"
+        >
+          {isRecording ? <div className="w-5 h-5 bg-red-500 rounded-sm" /> : <Mic className="w-6 h-6" />}
+        </button>
         <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-olive-200 to-transparent opacity-50"></div>
         <div className="flex flex-col items-center justify-center py-8">
           {!isRecording && !audioBlob ? (
@@ -282,7 +292,7 @@ export function AudioPage() {
             </div>
           ) : (
             <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4">
-              <div className="flex items-center justify-between bg-gradient-to-r from-olive-50 to-transparent p-4 md:p-5 rounded-2xl border border-olive-100">
+              <div className="flex items-center justify-between bg-gradient-to-r from-olive-50 to-transparent p-4 lg:p-5 rounded-2xl border border-olive-100">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-olive-200/50 text-olive-900 rounded-xl">
                     <Mic className="w-6 h-6" />
@@ -354,7 +364,7 @@ export function AudioPage() {
         </div>
 
         {isRecording && transcript && (
-          <div className="mt-6 p-6 md:p-8 bg-gradient-to-br from-paper-dark/40 to-paper-dark/10 rounded-2xl border border-olive-200/50 relative overflow-hidden">
+          <div className="mt-6 p-6 lg:p-8 bg-gradient-to-br from-paper-dark/40 to-paper-dark/10 rounded-2xl border border-olive-200/50 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1 h-full bg-olive-400/50"></div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
@@ -362,7 +372,7 @@ export function AudioPage() {
                 تفريغ مباشر
               </h3>
             </div>
-            <p className="text-olive-900 leading-relaxed font-serif text-lg md:text-xl">
+            <p className="text-olive-900 leading-relaxed font-serif text-lg lg:text-xl">
               {transcript}
             </p>
           </div>
@@ -375,7 +385,7 @@ export function AudioPage() {
           <div className="p-2 bg-olive-100 rounded-xl text-olive-900">
             <Clock className="w-5 h-5" />
           </div>
-          <h2 className="font-serif text-xl md:text-2xl font-bold text-olive-900">
+          <h2 className="font-serif text-xl lg:text-2xl font-bold text-olive-900">
             التسجيلات السابقة
           </h2>
         </div>
@@ -396,12 +406,12 @@ export function AudioPage() {
             {records.map((record) => (
               <div
                 key={record.id}
-                className="bg-card p-6 md:p-8 rounded-[1.5rem] border border-olive-200/40 shadow-sm hover:shadow-lg hover:shadow-olive-900/5 transition-all duration-300 group relative overflow-hidden"
+                className="bg-card p-6 lg:p-8 rounded-[1.5rem] border border-olive-200/40 shadow-sm hover:shadow-lg hover:shadow-olive-900/5 transition-all duration-300 group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-2 h-full bg-olive-200/30 group-hover:bg-olive-400/50 transition-colors duration-300"></div>
                 <div className="flex justify-between items-start mb-6 pl-2">
                   <div>
-                    <h3 className="font-serif text-xl md:text-2xl font-bold text-olive-900 mb-2 group-hover:text-olive-700 transition-colors">
+                    <h3 className="font-serif text-xl lg:text-2xl font-bold text-olive-900 mb-2 group-hover:text-olive-700 transition-colors">
                       {record.title}
                     </h3>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-olive-50 text-olive-600 text-xs font-medium border border-olive-100/50">
@@ -432,11 +442,11 @@ export function AudioPage() {
                 )}
 
                 {record.transcript && (
-                  <div className="bg-gradient-to-br from-paper-dark/30 to-paper-dark/10 p-5 md:p-6 rounded-2xl border border-olive-100/50 relative">
+                  <div className="bg-gradient-to-br from-paper-dark/30 to-paper-dark/10 p-5 lg:p-6 rounded-2xl border border-olive-100/50 relative">
                     <div className="absolute top-4 right-4 text-olive-200">
                       <FileText className="w-6 h-6 opacity-50" />
                     </div>
-                    <p className="text-olive-800 leading-relaxed text-sm md:text-base whitespace-pre-wrap relative z-10">
+                    <p className="text-olive-800 leading-relaxed text-sm lg:text-base whitespace-pre-wrap relative z-10">
                       {record.transcript}
                     </p>
                   </div>

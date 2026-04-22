@@ -39,11 +39,12 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-paper/90 backdrop-blur-xl border-t border-olive-200/40 flex justify-around items-center p-2 pb-safe z-50 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-paper/90 backdrop-blur-xl border-t border-olive-200/40 flex justify-around items-center p-2 pb-safe z-50 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)]">
         {mainNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
+            replace
             onClick={() => setShowMore(false)}
             className={() =>
               cn(
@@ -122,10 +123,10 @@ export function BottomNav() {
         <>
           <div
             onClick={() => setShowMore(false)}
-            className="md:hidden fixed inset-0 bg-olive-900/20 backdrop-blur-sm z-40"
+            className="lg:hidden fixed inset-0 bg-olive-900/20 backdrop-blur-sm z-40"
           />
           <div
-            className="md:hidden fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] left-4 right-4 bg-card/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-olive-200/50 p-4 z-40 flex flex-col gap-2"
+            className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] left-4 right-4 bg-card/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-olive-200/50 p-4 z-40 flex flex-col gap-2"
           >
             {moreNavItems.map((item) => (
               <NavLink
